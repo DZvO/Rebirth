@@ -1,0 +1,67 @@
+Personally, I have a Mesh class that contains vertices and indices, and is the only class that does the draw calls.
+Renderer classes are, well, renderers that set the context in certain way. Each Renderer has begin(), render() and end() functions. In the first one, the renderer initializes the states as required (e.g. DeferredRenderer binds the G-buffer). In the second one, all the required meshes are drawn. In the last one, everything "leaky" is unbound (shaders and framebuffers, mainly). Each renderer is responsible for setting the GL states in the begin() function (i.e. enabling or disabling depth test and depth writes).
+In the render() phase, each renderer can reference any number of RenderContentProvider classes. This is just an interface that each "content provider" can implement. These content providers do the actual drawing to the surrounding renderer context. Examples are 3D model rendering system, 2D sprite rendering system, text rendering system and so on.
+So, in practice, the render loop goes like this:
+for each Renderer in Renderers:
+    Renderer.begin()
+    for each RenderContentProvider in Renderer.ContentProviders:
+        RenderContentProvider.process()
+    Renderer.end()
+After this "main" part, I call the quad renderer to output a quad in certain way (either output an intermediate texture like the depth buffer, or compose the final image), along with any full-screen post-processing effects (vignette, color effects, pixelization...).
+And here's how my classes look like:
+// Basic 2D texture. Keeps track of the texture ID
+// as well as the texture properties
+class Texture
+    unsigned int m_width;
+    unsigned int m_height;
+    GLuint m_textureID;
+    GLenum m_minFilter;
+    GLenum m_magFilter;
+    GLenum m_wrapS;
+    GLenum m_wrapT;
+    void bind(GLuint slot); // Binds the texture to the given slot
+
+// Shader program. Wraps the GL shader program and
+// caches the uniform locations.
+class ShaderProgram
+    GLuint m_programID;
+    void bind(); // Binds the shader
+    void setUniform(...); // Uniform setter	s
+
+// Base class for all renderers. Usually renderers make use
+// of the frame buffer (e.g. the DeferredRenderer)
+class Renderer
+    GLuint m_fboID;
+    void begin();
+    void render();
+    void end();
+
+// The deferred renderer.
+class DeferredRenderer : public Renderer
+    GBuffer m_gbuffer;
+
+// The G-buffer
+class GBuffer
+    Texture m_color;
+    Texture m_normal;
+    Texture m_depth;
+And so on. The main thing I've tried to keep in mind when designing the engine is to keep data separate from the functionality and making every GL-related portion responsible for their own state changes. I can't really help you with multi-threadedness, since my engine is single-threaded (although the program logic can be run in separate threads if needed).
+
+The multiple renderers I currently have are a deferred renderer (the main bulk of the scene), a forward renderer (special cases layered on top of the deferred scene), and a GUI system. At the moment there's only OpenGL support in the engine, but if I would add D3D support, I'd probably do an abstraction layer to the base Renderer class that would hide the OpenGL and D3D specific code.
+The current iteration of the engine doesn't have support for animated meshes. However, I'd probably implement it as a component that's attached to the entities, and have separate render queues in the renderers for the animated meshes.
+
+
+
+
+
+
+
+
+
+## *Rebirth* ##
+Rebirth is a attempt at creating a game from **start to finish**, without abandoning the idea or changing it halfway through. It's also my first attempt of a project with a timeframe (**~4 Months, 7th December 2014 to 7th April 2015**).
+The game will be multi-platform with a guaranteed release for Windows and Mac OS X and a possible Linux release as well (likely only for recent Ubuntu releases). For this I use the **CMake** build system to create Visual Studio / XCode / make project files.
+The game will only need the SDL2, SDL2_image, SDL2_ttf and glm libraries.
+
+### About the Game ###
+The game is a idea I've 
