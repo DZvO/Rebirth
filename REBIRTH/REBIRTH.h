@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 
+#include "ShaderProgram.h"
+
 #pragma once
 class REBIRTH
 {

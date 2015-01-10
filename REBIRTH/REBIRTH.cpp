@@ -37,7 +37,7 @@ void REBIRTH::run() {
 		printf("TTF_Init: %s\n", TTF_GetError());
 		exit(2);
 	}
-
+	/*
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glEnable(GL_SMOOTH);
@@ -46,9 +46,15 @@ void REBIRTH::run() {
 	glDisable(GL_CULL_FACE);
 	glFrontFace(GL_CCW);
 	glCullFace(GL_BACK);
-	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);*/
 
+	CShaderProgram shaderprogram;
+	shaderprogram.loadFragment("res/basic_texture_shader.frag");
+	shaderprogram.loadVertex("res/basic_texture_shader.vert");
+	shaderprogram.compile();
+	shaderprogram.bind();
 
+	int attribute_coord2d = shaderprogram.getAttribLocation("coord2d");
 	//glDebugMessageCallbackARB(&meErrorCallback, NULL);
 	//glEnable(GL_DEBUG_OUTPUT);
 
@@ -63,6 +69,29 @@ void REBIRTH::run() {
 		}
 		glClearColor(0.25f, 0.25f, 0.25f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		shaderprogram.bind();
+		glEnableVertexAttribArray(attribute_coord2d);
+		GLfloat triangle_vertices[] = {
+			0.0, 0.8,
+			-0.8, -0.8,
+			0.8, -0.8,
+		};
+		/* Describe our vertices array to OpenGL (it can't guess its format automatically) */
+		glVertexAttribPointer(
+			attribute_coord2d, // attribute
+			2,                 // number of elements per vertex, here (x,y)
+			GL_FLOAT,          // the type of each element
+			GL_FALSE,          // take our values as-is
+			0,                 // no extra data between each position
+			triangle_vertices  // pointer to the C array
+			);
+
+		/* Push each element in buffer_vertices to the vertex shader */
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDisableVertexAttribArray(attribute_coord2d);
+
+
 		SDL_GL_SwapWindow(window);
 		SDL_Delay(15);
 	}

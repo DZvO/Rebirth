@@ -65,7 +65,9 @@
 copy "$(ProjectDir)lib\SDL2_ttf.dll" "$(OutDir)"
 copy "$(ProjectDir)lib\glew32d.dll" "$(OutDir)"
 copy "$(ProjectDir)lib\libfreetype-6.dll" "$(OutDir)"
-copy "$(ProjectDir)lib\zlib1.dll" "$(OutDir)"</Command>
+copy "$(ProjectDir)lib\zlib1.dll" "$(OutDir)"
+mkdir "$(OutDir)res\"
+copy "$(ProjectDir)res\*" "$(OutDir)res\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -91,6 +93,7 @@ copy "$(ProjectDir)lib\zlib1.dll" "$(OutDir)"</Command>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ForwardRenderer.h" />
     <ClInclude Include="include\begin_code.h" />
     <ClInclude Include="include\close_code.h" />
     <ClInclude Include="include\SDL.h" />
@@ -148,12 +151,25 @@ copy "$(ProjectDir)lib\zlib1.dll" "$(OutDir)"</Command>
     <ClInclude Include="include\SDL_version.h" />
     <ClInclude Include="include\SDL_video.h" />
     <ClInclude Include="REBIRTH.h" />
+    <ClInclude Include="RenderContentProvider.h" />
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="TextRenderContentProvider.h" />
+    <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ForwardRenderer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="REBIRTH.cpp" />
+    <ClCompile Include="RenderContentProvider.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="TextRenderContentProvider.cpp" />
+    <ClCompile Include="Texture.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\basic_texture_shader.frag">
+      <DeploymentContent>false</DeploymentContent>
+    </None>
+    <None Include="res\basic_texture_shader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
